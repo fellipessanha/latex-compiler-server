@@ -1,6 +1,6 @@
 # latex-compiler-api
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/fellipessanha/latex-compiler-api)](https://hub.docker.com/r/fellipessanha/latex-compiler-api)
+[![Docker Pulls](https://img.shields.io/docker/pulls/fellipessanha/latex-compiler-api)](https://hub.docker.com/r/fellipessanha/latex-compiler-server)
 [![Go](https://img.shields.io/badge/go-1.25-blue)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENCE)
 
