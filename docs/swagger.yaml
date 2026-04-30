@@ -1,0 +1,276 @@
+basePath: /
+definitions:
+  compiler.CompileOptions:
+    properties:
+      engine:
+        description: 'Engine selects the LaTeX engine. Supported: "pdflatex" (default),
+          "xelatex", "lualatex".'
+        type: string
+      engine_args:
+        description: |-
+          EngineArgs are injected into the engine invocation string that latexmk
+          constructs, after the base safety flags but before %O %S
+          (e.g. ["-8bit", "-etex"]).
+        items:
+          type: string
+        type: array
+      extra_flags:
+        description: |-
+          ExtraFlags are appended directly to the latexmk invocation
+          (e.g. ["-f", "-recorder"]).
+        items:
+          type: string
+        type: array
+      shell_escape:
+        description: ShellEscape enables \write18 / shell escape. Disabled by default
+          for security.
+        type: boolean
+    type: object
+  handlers.errorResponse:
+    properties:
+      error:
+        type: string
+      log:
+        type: string
+    type: object
+  handlers.gitRequest:
+    properties:
+      compile_options:
+        $ref: '#/definitions/compiler.CompileOptions'
+      entry:
+        type: string
+      output_options:
+        $ref: '#/definitions/output.OutputOptions'
+      ref:
+        type: string
+      target_dir:
+        type: string
+      token:
+        type: string
+      url:
+        type: string
+    type: object
+  output.OutputOptions:
+    properties:
+      include_png:
+        description: |-
+          IncludePNG adds a page-1 thumbnail (thumbnail.png) to archive output formats.
+          Ignored for pdf and png output types.
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Compiles LaTeX sources received from a git repository or an uploaded
+    archive.
+  title: LaTeX Compiler API
+  version: "1.0"
+paths:
+  /blob:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Compressed source archive (zip, tar, or 7zip)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: JSON-encoded compile and output options
+        example: '{"entry":"main.tex","compile_options":{},"output_options":{}}'
+        in: formData
+        name: options
+        type: string
+      produces:
+      - application/pdf
+      - image/png
+      - application/zip
+      - application/x-tar
+      - application/x-7z-compressed
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Compile LaTeX from an uploaded archive
+      tags:
+      - compile
+  /blob/{output}:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Output format (pdf, png, zip, tar, 7zip). Defaults to pdf.
+        enum:
+        - pdf
+        - png
+        - zip
+        - tar
+        - 7zip
+        in: path
+        name: output
+        type: string
+      - description: Compressed source archive (zip, tar, or 7zip)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: JSON-encoded compile and output options
+        example: '{"entry":"main.tex","compile_options":{},"output_options":{}}'
+        in: formData
+        name: options
+        type: string
+      produces:
+      - application/pdf
+      - image/png
+      - application/zip
+      - application/x-tar
+      - application/x-7z-compressed
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Compile LaTeX from an uploaded archive
+      tags:
+      - compile
+  /git:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Repository URL and compile options
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.gitRequest'
+      produces:
+      - application/pdf
+      - image/png
+      - application/zip
+      - application/x-tar
+      - application/x-7z-compressed
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Compile LaTeX from a git repository
+      tags:
+      - compile
+  /git/{output}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Output format (pdf, png, zip, tar, 7zip). Defaults to pdf.
+        enum:
+        - pdf
+        - png
+        - zip
+        - tar
+        - 7zip
+        in: path
+        name: output
+        type: string
+      - description: Repository URL and compile options
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.gitRequest'
+      produces:
+      - application/pdf
+      - image/png
+      - application/zip
+      - application/x-tar
+      - application/x-7z-compressed
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Compile LaTeX from a git repository
+      tags:
+      - compile
+  /health:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Health check
+      tags:
+      - system
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

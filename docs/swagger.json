@@ -1,0 +1,399 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Compiles LaTeX sources received from a git repository or an uploaded archive.",
+        "title": "LaTeX Compiler API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/blob": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/pdf",
+                    "image/png",
+                    "application/zip",
+                    "application/x-tar",
+                    "application/x-7z-compressed"
+                ],
+                "tags": [
+                    "compile"
+                ],
+                "summary": "Compile LaTeX from an uploaded archive",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Compressed source archive (zip, tar, or 7zip)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "{\"entry\":\"main.tex\",\"compile_options\":{},\"output_options\":{}}",
+                        "description": "JSON-encoded compile and output options",
+                        "name": "options",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/blob/{output}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/pdf",
+                    "image/png",
+                    "application/zip",
+                    "application/x-tar",
+                    "application/x-7z-compressed"
+                ],
+                "tags": [
+                    "compile"
+                ],
+                "summary": "Compile LaTeX from an uploaded archive",
+                "parameters": [
+                    {
+                        "enum": [
+                            "pdf",
+                            "png",
+                            "zip",
+                            "tar",
+                            "7zip"
+                        ],
+                        "type": "string",
+                        "description": "Output format (pdf, png, zip, tar, 7zip). Defaults to pdf.",
+                        "name": "output",
+                        "in": "path"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Compressed source archive (zip, tar, or 7zip)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "{\"entry\":\"main.tex\",\"compile_options\":{},\"output_options\":{}}",
+                        "description": "JSON-encoded compile and output options",
+                        "name": "options",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/git": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/pdf",
+                    "image/png",
+                    "application/zip",
+                    "application/x-tar",
+                    "application/x-7z-compressed"
+                ],
+                "tags": [
+                    "compile"
+                ],
+                "summary": "Compile LaTeX from a git repository",
+                "parameters": [
+                    {
+                        "description": "Repository URL and compile options",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.gitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/git/{output}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/pdf",
+                    "image/png",
+                    "application/zip",
+                    "application/x-tar",
+                    "application/x-7z-compressed"
+                ],
+                "tags": [
+                    "compile"
+                ],
+                "summary": "Compile LaTeX from a git repository",
+                "parameters": [
+                    {
+                        "enum": [
+                            "pdf",
+                            "png",
+                            "zip",
+                            "tar",
+                            "7zip"
+                        ],
+                        "type": "string",
+                        "description": "Output format (pdf, png, zip, tar, 7zip). Defaults to pdf.",
+                        "name": "output",
+                        "in": "path"
+                    },
+                    {
+                        "description": "Repository URL and compile options",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.gitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "system"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "compiler.CompileOptions": {
+            "type": "object",
+            "properties": {
+                "engine": {
+                    "description": "Engine selects the LaTeX engine. Supported: \"pdflatex\" (default), \"xelatex\", \"lualatex\".",
+                    "type": "string"
+                },
+                "engine_args": {
+                    "description": "EngineArgs are injected into the engine invocation string that latexmk\nconstructs, after the base safety flags but before %O %S\n(e.g. [\"-8bit\", \"-etex\"]).",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "extra_flags": {
+                    "description": "ExtraFlags are appended directly to the latexmk invocation\n(e.g. [\"-f\", \"-recorder\"]).",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "shell_escape": {
+                    "description": "ShellEscape enables \\write18 / shell escape. Disabled by default for security.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "handlers.errorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "log": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.gitRequest": {
+            "type": "object",
+            "properties": {
+                "compile_options": {
+                    "$ref": "#/definitions/compiler.CompileOptions"
+                },
+                "entry": {
+                    "type": "string"
+                },
+                "output_options": {
+                    "$ref": "#/definitions/output.OutputOptions"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "target_dir": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "output.OutputOptions": {
+            "type": "object",
+            "properties": {
+                "include_png": {
+                    "description": "IncludePNG adds a page-1 thumbnail (thumbnail.png) to archive output formats.\nIgnored for pdf and png output types.",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
