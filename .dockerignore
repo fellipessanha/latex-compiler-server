@@ -1,0 +1,16 @@
+.git
+.gitignore
+
+# Test files
+**/*_test.go
+
+# Documentation and metadata
+docs/swagger.json
+docs/swagger.yaml
+README.md
+LICENSE.txt
+cves.txt
+
+# Docker build files (not needed inside the build context)
+Dockerfile
+.dockerignore
