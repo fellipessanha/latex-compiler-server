@@ -1,6 +1,6 @@
 module latex-compiler-api
 
-go 1.25.1
+go 1.26.3
 
 require (
 	github.com/swaggo/http-swagger v1.3.4
